@@ -4,17 +4,21 @@ import Link from 'next/link';
 import { TextInput, Select, SelectItem, Badge, Button } from '@tremor/react'; 
 import { RiAddLine } from '@remixicon/react'; 
 import { useFormState } from 'react-dom'; 
-import { createRecorder } from '@/lib/actions'; 
+import { createStudent } from '@/lib/actions'; 
 
-export default function CreateRecorderForm() {
+export default function CreateStudentForm() {
     const initialState = { message: '', errors: {} }; 
-    const [state, dispatch] = useFormState(createRecorder, initialState); 
+    const [state, dispatch] = useFormState(createStudent, initialState); 
 
     return (
         <form action={dispatch}>
             <div>
+                <label className="block mt-5 mb-2 text-sm font-medium text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis" htmlFor="id">ID</label>
+                <TextInput id="id" name="id" type="text" placeholder="Student ID..." error={!!state.errors?.student_id} errorMessage={state.errors?.student_id?.join('\n')} />
+            </div>
+            <div>
                 <label className="block mt-5 mb-2 text-sm font-medium text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis" htmlFor="name">Name</label>
-                <TextInput id="name" name="name" type="text" placeholder="Recorder name..." error={!!state.errors?.name} errorMessage={state.errors?.name?.join('\n')} />
+                <TextInput id="name" name="name" type="text" placeholder="Student name..." error={!!state.errors?.name} errorMessage={state.errors?.name?.join('\n')} />
             </div>
             <div className="mt-4 mb-3">
                 <label className="block mt-5 mb-2 text-sm font-medium text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis" htmlFor="status">Status</label> 
@@ -28,10 +32,10 @@ export default function CreateRecorderForm() {
                 </Select>
             </div>
             <div className="flex items-center justify-end gap-2">
-                <Link href="/dashboard/recorders">
+                <Link href="/dashboard/students">
                     <Button variant="secondary">Cancel</Button>
                 </Link> 
-                <Button type="submit" icon={RiAddLine} iconPosition="right">Create Recorder</Button> 
+                <Button type="submit" icon={RiAddLine} iconPosition="right">Create Student</Button> 
             </div>
             <div id="form-error" aria-live="polite" aria-atomic="true">
                 {state.message && <p className="mt-4 text-sm text-red-500">{state.message}</p>} 

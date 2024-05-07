@@ -18,6 +18,14 @@ const RecorderSchema = z.object({
     }), 
 }); 
 
+const StudentSchema = z.object({
+    student_id: z.string().length(10, 'ID must have a length of 10.'), 
+    name: z.string().min(1, 'Name msut be at least 1 character.'), 
+    status: z.enum(['active', 'inactive'], {
+        invalid_type_error: 'Please select a status.' 
+    }), 
+}); 
+
 // EditItem schema is CreateItem schema with id 
 // const EditItem = CreateItem.extend({
 //     id: z.string(), 
@@ -179,3 +187,77 @@ export async function deleteRecorder(recorderId: string) {
         return { message: 'Database error: Failed to delete recorder.' }; 
     }
 } 
+
+export async function createStudent(prevState: State, formData: FormData) {
+    const validatedFields = StudentSchema.safeParse({
+        student_id: formData.get('id'), 
+        name: formData.get('name'), 
+        status: formData.get('status') 
+    }); 
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors, 
+            message: 'Missing fields. Failed to create student.' 
+        }; 
+    } 
+
+    const { student_id, name, status } = validatedFields.data; 
+    // const date_activated = new Date().toISOString().split('T')[0]; 
+
+    try {
+        await pool.query(`
+            INSERT INTO student (student_id, name, status, date_activated)
+            VALUES ('${student_id}', '${name}', '${status}', NOW()); 
+        `); 
+    } catch (error) {
+        console.log(error); 
+        return { message: 'Database error: Failed to create student.' }; 
+    } 
+
+    revalidatePath('/dashboard/students'); 
+    redirect('/dashboard/students'); 
+} 
+
+export async function updateStudent(prev_student_id: string, prevState: State, formData: FormData) {
+    const validatedFields = StudentSchema.safeParse({
+        student_id: formData.get('id'), 
+        name: formData.get('name'), 
+        status: formData.get('status') 
+    }); 
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors, 
+            message: 'Missing fields. Failed to edit student.' 
+        }; 
+    } 
+
+    const { student_id, name, status } = validatedFields.data; 
+
+    try {
+        await pool.query(`
+            UPDATE student 
+            SET student_id = '${student_id}', name = '${name}', status = '${status}' 
+            WHERE student_id = '${prev_student_id}'; 
+        `); 
+    } catch (error) {
+        return { message: 'Database error: Failed to edit student.' }; 
+    } 
+
+    revalidatePath('/dashboard/students'); 
+    redirect('/dashboard/students'); 
+}
+
+export async function deleteStudent(studentId: string) {
+    try {
+        await pool.query(`
+            DELETE FROM student 
+            WHERE student_id = '${studentId}'; 
+        `); 
+        revalidatePath('/dashboard/students'); 
+        return { message: 'Student deleted successfully.' }; 
+    } catch (error) {
+        return { message: 'Database error: Failed to delete student.' }; 
+    }
+}

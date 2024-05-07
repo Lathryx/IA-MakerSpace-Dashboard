@@ -14,7 +14,7 @@ export default async function RecordersTable({
 
     return (
         <Card className="mt-10">
-            <p className="text-xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">Items</p>
+            <p className="text-xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">Recorders</p>
             <Table className="mt-5">
                 <TableHead>
                     <TableRow>

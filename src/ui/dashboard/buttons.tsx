@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { RiAddLine, RiEdit2Fill, RiDeleteBin6Fill, RiSunLine, RiMoonFill, RiLogoutBoxLine } from '@remixicon/react'; 
 import { Button, Dialog, DialogPanel, Switch } from '@tremor/react'; 
 import { useState } from 'react'; 
-import { deleteItem, deleteRecorder } from '@/lib/actions'; 
+import { deleteItem, deleteRecorder, deleteStudent } from '@/lib/actions'; 
 import { useTheme } from 'next-themes'; 
 
 export function NewItemButton() {
@@ -42,7 +42,7 @@ export function DeleteButton({
             deleteWithId = deleteRecorder.bind(null, id); 
             break; 
         case 'student': 
-            deleteWithId = () => {};
+            deleteWithId = deleteStudent.bind(null, id);
             break;
         case 'order':
             deleteWithId = () => {};
@@ -82,6 +82,22 @@ export function NewRecorderButton() {
 export function EditRecorderButton({ recorderId }: { recorderId: string }) {
     return (
         <Link href={`/dashboard/recorders/${recorderId}/edit`}>
+            <Button className="border-tremor-brand-muted dark:border-dark-tremor-brand-muted" icon={RiEdit2Fill} variant="secondary" tooltip="Edit" />
+        </Link>
+    ); 
+} 
+
+export function NewStudentButton() {
+    return (
+        <Link href="/dashboard/students/create">
+            <Button icon={RiAddLine} variant="primary">New Student</Button> 
+        </Link>
+    ); 
+} 
+
+export function EditStudentButton({ studentId }: { studentId: string }) {
+    return (
+        <Link href={`/dashboard/students/${studentId}/edit`}>
             <Button className="border-tremor-brand-muted dark:border-dark-tremor-brand-muted" icon={RiEdit2Fill} variant="secondary" tooltip="Edit" />
         </Link>
     ); 

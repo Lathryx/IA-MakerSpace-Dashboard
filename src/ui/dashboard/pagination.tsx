@@ -92,7 +92,7 @@ function PaginationArrow({
     const className = clsx(
         'flex h-10 w-10 items-center justify-center rounded-md border border-tremor-brand dark:border-dark-tremor-brand',
         {
-            'pointer-events-none text-tremor-content-subtle dark:text-dark-tremor-content-subtle border-tremor-background-muted dark:border-dark-tremor-background-muted': isDisabled,
+            'pointer-events-none text-tremor-content-subtle dark:text-dark-tremor-content-subtle border-tremor-content-subtle dark:border-dark-tremor-content-subtle border-opacity-25 dark:border-opacity-25': isDisabled,
             'hover:bg-gray-100': !isDisabled,
             'mr-2 md:mr-4': direction === 'left',
             'ml-2 md:ml-4': direction === 'right',

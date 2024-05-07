@@ -1,7 +1,7 @@
-import { Card, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Button } from '@tremor/react'; 
+import { Card, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@tremor/react'; 
 import { fetchFilteredItems } from '@/lib/data'; 
 import { Item } from '@/lib/definitions'; 
-import { DeleteItemButton, EditItemButton } from '../buttons';
+import { DeleteButton, EditItemButton } from '@/ui/dashboard/buttons';
 
 export default async function ItemsTable({
     query, 
@@ -38,7 +38,10 @@ export default async function ItemsTable({
                             <TableCell>
                                 <div className="flex justify-end gap-4">
                                     <EditItemButton itemId={item.item_id} /> 
-                                    <DeleteItemButton itemId={item.item_id} itemName={item.name} /> 
+                                    <DeleteButton id={item.item_id} type="item">
+                                        <p className="mb-3 text-xl text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">Delete <span className="px-2 py-1 bg-tremor-background-subtle dark:bg-dark-tremor-background-subtle font-mono rounded-lg">{item.name}</span> Item</p>
+                        <p>Are you sure you want to delete this item?</p>    
+                                    </DeleteButton> 
                                 </div>
                             </TableCell>
                         </TableRow>

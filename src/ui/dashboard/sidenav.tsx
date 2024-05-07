@@ -4,6 +4,7 @@ import { RiDashboardFill, RiBookFill, RiShapesFill, RiGraduationCapFill, RiTeamF
 import Link from 'next/link'; 
 import { usePathname } from 'next/navigation'; 
 import clsx from 'clsx'; 
+import { SwitchThemeButton, SignOutButton } from '@/ui/dashboard/buttons';
 
 const routes = [
     { name: 'Dashboard', href: '/dashboard', icon: RiDashboardFill },
@@ -17,7 +18,7 @@ export default function SideNav() {
     const pathname = usePathname(); 
 
     return (
-        <div className="flex flex-col h-full m-2 p-3 text-tremor-content-emphasis bg-tremor-background-muted rounded-lg dark:text-dark-tremor-content-emphasis dark:bg-dark-tremor-background-muted">
+        <div className="flex flex-col justify-between h-full m-2 p-3 text-tremor-content-emphasis bg-tremor-background-muted rounded-lg dark:text-dark-tremor-content-emphasis dark:bg-dark-tremor-background-muted">
             <div>
                 {routes.map(route => {
                     const RouteIcon = route.icon; 
@@ -38,6 +39,10 @@ export default function SideNav() {
                         </Link>
                     ); 
                 })} 
+            </div>
+            <div>
+                <SwitchThemeButton /> 
+                <SignOutButton /> 
             </div>
         </div>
     ); 

@@ -1,49 +1,19 @@
-'use client'; 
-
-import { RiDashboardFill, RiBookFill, RiShapesFill, RiGraduationCapFill, RiTeamFill } from '@remixicon/react'; 
-import Link from 'next/link'; 
-import { usePathname } from 'next/navigation'; 
-import clsx from 'clsx'; 
+import NavLinks from '@/ui/dashboard/nav-links'; 
 import { SwitchThemeButton, SignOutButton } from '@/ui/dashboard/buttons';
-
-const routes = [
-    { name: 'Dashboard', href: '/dashboard', icon: RiDashboardFill },
-    { name: 'Orders', href: '/dashboard/orders', icon: RiBookFill }, 
-    { name: 'Items', href: '/dashboard/items', icon: RiShapesFill }, 
-    { name: 'Students', href: '/dashboard/students', icon: RiGraduationCapFill },
-    { name: 'Recorders', href: '/dashboard/recorders', icon: RiTeamFill } 
-]; 
+import { signOut } from '@/auth'; 
 
 export default function SideNav() {
-    const pathname = usePathname(); 
-
     return (
-        <div className="flex flex-col justify-between h-full m-2 p-3 text-tremor-content-emphasis bg-tremor-background-muted rounded-lg dark:text-dark-tremor-content-emphasis dark:bg-dark-tremor-background-muted">
-            <div>
-                {routes.map(route => {
-                    const RouteIcon = route.icon; 
-                    return (
-                        <Link 
-                            className={clsx(
-                                "flex items-center gap-3 my-3 p-3 rounded-lg",
-                                {
-                                    "hover:bg-tremor-background-subtle dark:hover:bg-dark-tremor-background-subtle": pathname !== route.href, 
-                                    "bg-tremor-brand-muted dark:bg-dark-tremor-brand-muted": pathname === route.href 
-                                }
-                            )} 
-                            href={route.href} 
-                            key={route.name}
-                         >
-                            <RouteIcon className="w-6" /> 
-                            <p className="hidden md:block">{route.name}</p> 
-                        </Link>
-                    ); 
-                })} 
-            </div>
-            <div>
-                <SwitchThemeButton /> 
+        <div className="flex grow md:flex-col justify-between h-full m-2 p-3 text-tremor-content-emphasis bg-tremor-background-muted rounded-lg dark:text-dark-tremor-content-emphasis dark:bg-dark-tremor-background-muted">
+            <NavLinks /> 
+            <div className="hidden md:block grow w-full h-auto"></div>
+            <SwitchThemeButton /> 
+            <form className="self-center md:w-full" action={async () => {
+                'use server'; 
+                await signOut(); 
+            }}>
                 <SignOutButton /> 
-            </div>
+            </form> 
         </div>
     ); 
 }

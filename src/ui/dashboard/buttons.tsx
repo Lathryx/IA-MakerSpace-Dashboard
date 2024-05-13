@@ -119,11 +119,11 @@ export function EditOrderButton({ orderId }: { orderId: string }) {
     ); 
 }
 
-export function SignOutButton() {
+export function SignOutButton() {    
     return (
-        <button className="flex items-center gap-3 my-3 p-3 w-full text-white rounded-lg bg-red-500 hover:bg-red-600 bg-opacity-75 hover:bg-opacity-75x">
+        <button className="flex items-center md:gap-3 my-3 p-3 md:w-full text-white rounded-lg bg-red-500 hover:bg-red-600 bg-opacity-75 hover:bg-opacity-75x">
             <RiLogoutBoxLine /> 
-            <span className="text-sm">Sign Out</span> 
+            <span className="hidden md:block text-sm">Sign Out</span> 
         </button> 
     ); 
 } 
@@ -132,12 +132,12 @@ export function SwitchThemeButton() {
     const { theme, setTheme } = useTheme(); 
 
     return (
-        <button className="flex items-center gap-3 my-3 p-3 w-full rounded-lg hover:bg-tremor-background-subtle dark:hover:bg-dark-tremor-background-subtle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+        <button className="flex items-center md:gap-3 my-3 p-3 md:w-full rounded-lg hover:bg-tremor-background-subtle dark:hover:bg-dark-tremor-background-subtle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             <div>
                 {theme === 'dark' ? <RiSunLine /> : <RiMoonFill />}
             </div>
-            <span className="text-sm mr-auto">Switch Theme</span> 
-            <Switch checked={theme === 'dark'} /> 
+            <span className="hidden md:block text-sm mr-auto">Switch Theme</span> 
+            <Switch className="hidden md:inline-flex" checked={theme === 'dark'} /> 
         </button>
     ); 
 }

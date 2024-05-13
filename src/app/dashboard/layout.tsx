@@ -2,7 +2,7 @@ import SideNav from '@/ui/dashboard/sidenav';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex flex-col md:flex-row h-screen md:overflow-hidden bg-tremor-background dark:bg-dark-tremor-background">
+        <div className="flex flex-col md:flex-row h-screen md:overflow-hidden bg-tremor-background dark:bg-dark-tremor-background transition-all duration-100">
             <div className="w-full flex-none md:w-64">
                 <SideNav /> 
             </div>

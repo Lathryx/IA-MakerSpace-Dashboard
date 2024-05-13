@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation'; 
 import { z } from 'zod'; 
 import { pool } from '@/db'; 
+import { AuthError } from 'next-auth'; 
+import { signIn } from '@/auth'; 
 
 const ItemSchema = z.object({
     name: z.string().min(1, 'Name must be at least 1 character.'), 
@@ -37,19 +39,21 @@ const OrderSchema = z.object({
         invalid_type_error: 'Please select a status.' 
     }) 
 }).refine(data => {
-    const date_out = new Date(data.date_out); 
-    const date_returned = new Date(data.date_returned); 
-    return date_out < date_returned; 
-
-}, {
-    message: 'Return date must be after date out.', 
-    path: ['date_returned'] 
-}). refine(data => {
     if (data.status === 'returned') return data.date_returned !== ''; 
     return true; 
 }, {
     message: 'Return date is required for returned orders.', 
     path: ['date_returned']
+}).refine(data => {
+    if (data.status === 'returned') {
+        const date_out = new Date(data.date_out); 
+        const date_returned = new Date(data.date_returned); 
+        return date_out < date_returned; 
+    } 
+    return true; 
+}, {
+    message: 'Return date must be after date out.', 
+    path: ['date_returned'] 
 }); 
 
 // EditItem schema is CreateItem schema with id 
@@ -295,6 +299,7 @@ export async function createOrder(prevState: State, formData: FormData) {
         student: formData.get('student'), 
         recorder: formData.get('recorder'), 
         date_out: formData.get('dateout'), 
+        date_returned: formData.get('datereturned'), 
         status: formData.get('status') 
     }); 
 
@@ -374,3 +379,19 @@ export async function deleteOrder(orderId: string) {
         return { message: 'Database error: Failed to delete order.' }; 
     }
 } 
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+    try {
+        await signIn('credentials', formData); 
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin': 
+                    return 'Invalid credentials.'; 
+                default: 
+                    return 'Something went wrong.'; 
+            } 
+        }
+        throw error; 
+    }
+}

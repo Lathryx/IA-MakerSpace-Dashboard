@@ -103,6 +103,22 @@ export function EditStudentButton({ studentId }: { studentId: string }) {
     ); 
 }
 
+export function NewOrderButton() {
+    return (
+        <Link href="/dashboard/orders/create">
+            <Button icon={RiAddLine} variant="primary">New Order</Button> 
+        </Link>
+    ); 
+}
+
+export function EditOrderButton({ orderId }: { orderId: string }) {
+    return (
+        <Link href={`/dashboard/orders/${orderId}/edit`}>
+            <Button className="border-tremor-brand-muted dark:border-dark-tremor-brand-muted" icon={RiEdit2Fill} variant="secondary" tooltip="Edit" />
+        </Link>
+    ); 
+}
+
 export function SignOutButton() {
     return (
         <button className="flex items-center gap-3 my-3 p-3 w-full text-white rounded-lg bg-red-500 hover:bg-red-600 bg-opacity-75 hover:bg-opacity-75x">

@@ -26,6 +26,32 @@ const StudentSchema = z.object({
     }), 
 }); 
 
+const OrderSchema = z.object({
+    item: z.string(), 
+    quantity: z.coerce.number().int('Quantity must be a whole number.').positive('Quantity must be positive.'), 
+    student: z.string(), 
+    recorder: z.string(), 
+    date_out: z.string().min(1, "Please select a date."), 
+    date_returned: z.string(), 
+    status: z.enum(['returned', 'outstanding'], {
+        invalid_type_error: 'Please select a status.' 
+    }) 
+}).refine(data => {
+    const date_out = new Date(data.date_out); 
+    const date_returned = new Date(data.date_returned); 
+    return date_out < date_returned; 
+
+}, {
+    message: 'Return date must be after date out.', 
+    path: ['date_returned'] 
+}). refine(data => {
+    if (data.status === 'returned') return data.date_returned !== ''; 
+    return true; 
+}, {
+    message: 'Return date is required for returned orders.', 
+    path: ['date_returned']
+}); 
+
 // EditItem schema is CreateItem schema with id 
 // const EditItem = CreateItem.extend({
 //     id: z.string(), 
@@ -260,4 +286,91 @@ export async function deleteStudent(studentId: string) {
     } catch (error) {
         return { message: 'Database error: Failed to delete student.' }; 
     }
+} 
+
+export async function createOrder(prevState: State, formData: FormData) {
+    const validatedFields = OrderSchema.safeParse({
+        item: formData.get('item'), 
+        quantity: formData.get('quantity'), 
+        student: formData.get('student'), 
+        recorder: formData.get('recorder'), 
+        date_out: formData.get('dateout'), 
+        status: formData.get('status') 
+    }); 
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors, 
+            message: 'Missing fields. Failed to create order.' 
+        }; 
+    } 
+
+    const { item, quantity, student, recorder, date_out, status } = validatedFields.data; 
+    // console.log("Date out: ", date_out); 
+    console.log(validatedFields.data); 
+
+    try {
+        await pool.query(`
+            INSERT INTO "order" (order_id, item_id, quantity, student_id, recorder_id, date_out, status) 
+            VALUES (DEFAULT, ${item}, ${quantity}, ${student}, '${recorder}', '${date_out}', '${status}'); 
+        `); 
+    } catch (error) {
+        console.log(error); 
+        return { message: 'Database error: Failed to create order.' }; 
+    } 
+
+    revalidatePath('/dashboard/orders'); 
+    redirect('/dashboard/orders'); 
 }
+
+export async function updateOrder(order_id: string, prevState: State, formData: FormData) {
+    const validatedFields = OrderSchema.safeParse({
+        item: formData.get('item'), 
+        quantity: formData.get('quantity'), 
+        student: formData.get('student'), 
+        recorder: formData.get('recorder'), 
+        date_out: formData.get('dateout'), 
+        status: formData.get('status') 
+    }); 
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors, 
+            message: 'Missing fields. Failed to edit order.' 
+        }; 
+    } 
+
+    const { item, quantity, student, recorder, date_out, status } = validatedFields.data; 
+
+    try {
+        await pool.query(`
+            UPDATE "order" 
+            SET 
+                item_id = ${item}, 
+                quantity = ${quantity}, 
+                student_id = ${student}, 
+                recorder_id = '${recorder}', 
+                date_out = '${date_out}', 
+                status = '${status}' 
+            WHERE order_id = ${order_id}; 
+        `); 
+    } catch (error) {
+        return { message: 'Database error: Failed to edit order.' }; 
+    } 
+
+    revalidatePath('/dashboard/orders'); 
+    redirect('/dashboard/orders'); 
+} 
+
+export async function deleteOrder(orderId: string) {
+    try {
+        await pool.query(`
+            DELETE FROM "order" 
+            WHERE order_id = '${orderId}'; 
+        `); 
+        revalidatePath('/dashboard/order'); 
+        return { message: 'Order deleted successfully.' }; 
+    } catch (error) {
+        return { message: 'Database error: Failed to delete order.' }; 
+    }
+} 
